@@ -1,0 +1,67 @@
+<section id="sobre" class="section about">
+  <div class="container">
+    <div class="intro">
+      <figure class="photo" appTilt="14" appReveal>
+        <picture>
+          <source srcset="assets/saulo.webp" type="image/webp" />
+          <img src="assets/saulo.jpg" alt="Saulo Hugo Rossi" width="600" height="800" loading="lazy" />
+        </picture>
+        <span class="holo" aria-hidden="true"></span>
+        <figcaption>{{ t({ pt: 'Informal e sempre animado ✌️', en: 'Laid-back and always up for it ✌️' }) }}</figcaption>
+      </figure>
+
+      <div class="left">
+        <span class="eyebrow" appReveal>{{ t({ pt: '01 · Sobre mim', en: '01 · About me' }) }}</span>
+
+        <p #manifesto class="manifesto">
+          @for (w of words(); track $index) {
+            <span class="w" [class.lit]="$index < litCount()" [class.hot]="w.hot">{{ w.word }}</span>{{ ' ' }}
+          }
+        </p>
+
+        <p class="formula" appReveal>
+          <span>{{ t({ pt: 'Direito', en: 'Law' }) }}</span> <i>+</i>
+          <span>{{ t({ pt: 'Gestão', en: 'Management' }) }}</span> <i>+</i>
+          <span>{{ t({ pt: 'Código', en: 'Code' }) }}</span> <i>=</i>
+          <strong class="gradient-text">{{ t({ pt: 'software que entende o negócio', en: 'software that gets the business' }) }}</strong>
+        </p>
+      </div>
+
+      <ol class="chapters">
+        @for (c of chapters; track c.icon; let i = $index) {
+          <li [appReveal]="i * 110">
+            <button
+              type="button"
+              class="flip"
+              [class.flipped]="flipped() === i"
+              [style.--accent]="c.accent"
+              [attr.aria-pressed]="flipped() === i"
+              (click)="toggle(i)"
+            >
+              <span class="face front">
+                <span class="icon">{{ c.icon }}</span>
+                <span class="txt">
+                  <strong>{{ t(c.title) }}</strong>
+                  <small>{{ t(c.years) }}</small>
+                </span>
+                <span class="turn" aria-hidden="true">↻</span>
+              </span>
+              <span class="face back">{{ t(c.body) }}</span>
+            </button>
+          </li>
+        }
+      </ol>
+    </div>
+
+    <div class="stats" [attr.aria-label]="t({ pt: 'Números', en: 'Numbers' })">
+      @for (s of stats; track $index; let i = $index) {
+        <div class="stat" [appReveal]="(i % 4) * 80">
+          <strong>
+            <app-count-up [value]="s.value" [from]="s.from ?? 0" [decimals]="s.decimals ?? 0" [prefix]="s.prefix ?? ''" [suffix]="s.suffix ?? ''" />
+          </strong>
+          <span>{{ t(s.label) }}</span>
+        </div>
+      }
+    </div>
+  </div>
+</section>

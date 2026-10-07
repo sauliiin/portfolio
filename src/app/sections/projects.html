@@ -1,0 +1,123 @@
+<section id="projetos" class="section">
+  <div class="container">
+    <div class="head">
+      <div>
+        <span class="eyebrow" appReveal>{{ t({ pt: '04 · Projetos', en: '04 · Selected work' }) }}</span>
+        <h2 class="section-title" appReveal="80">
+          {{ t({ pt: 'Coisas que eu', en: 'Things I' }) }}
+          <span class="gradient-text">{{ t({ pt: 'construí', en: 'built' }) }}</span>
+        </h2>
+      </div>
+      <p class="lead" appReveal="160">
+        {{ t({
+          pt: 'De apps para TV a pipelines que processam milhares de PDFs — software real, em produção, resolvendo problemas reais.',
+          en: 'From TV apps to pipelines crunching thousands of PDFs — real software, in production, solving real problems.'
+        }) }}
+      </p>
+    </div>
+
+    <div class="filters" role="tablist" appReveal>
+      @for (f of filters; track f.id) {
+        <button type="button" role="tab" [attr.aria-selected]="filter() === f.id" (click)="filter.set(f.id)">
+          {{ t(f.label) }} <span>{{ count(f.id) }}</span>
+        </button>
+      }
+    </div>
+
+    <div class="bento">
+      @for (p of projects(); track p.id; let i = $index) {
+        <article
+          class="card glow-border"
+          [class.featured]="p.featured"
+          [class.wide]="p.wide"
+          appCardVideo
+          [style.--h]="p.hue"
+          [appTilt]="p.featured ? 7 : 12"
+          [appReveal]="(i % 3) * 100"
+        >
+          <!-- Clipped background layer: keeps the card itself free of overflow
+               clipping, which would flatten the 3D layers below. -->
+          <div class="bg" aria-hidden="true">
+            <div class="spot"></div>
+            <div class="aura"></div>
+          </div>
+
+          @if (p.video) {
+            <div class="media" aria-hidden="true">
+              <video [poster]="'assets/videos/' + p.video + '.jpg'" [muted]="true" loop playsinline preload="none">
+                <source [src]="'assets/videos/' + p.video + '.webm'" type="video/webm" />
+              </video>
+              <span class="play">▶ demo</span>
+              @if (p.id === 'omnistream') {
+                <div class="platforms">
+                  @for (pl of platforms; track pl.icon) {
+                    <span>{{ pl.label }}</span>
+                  }
+                </div>
+              }
+            </div>
+          } @else if (p.id === 'assistente') {
+            <div class="chat" aria-hidden="true">
+              <div class="bubble q">{{ t({ pt: 'Defesa apresentada fora do prazo é conhecida?', en: 'Is a defence filed after the deadline admissible?' }) }}</div>
+              <div class="bubble a">
+                <span class="typing"><i></i><i></i><i></i></span>
+                <span class="sk w90"></span>
+                <span class="sk w75"></span>
+                <span class="sk w60"></span>
+                <span class="cites"><b>[1]</b><b>[2]</b><b>[3]</b></span>
+              </div>
+              <span class="model">⚙ Qwen3.5 9B · llama.cpp · offline</span>
+            </div>
+          }
+
+          <div class="body">
+            <span class="kicker">{{ t(p.kicker) }}</span>
+            <h3>{{ t(p.name) }}</h3>
+            <p class="summary">{{ t(p.summary) }}</p>
+
+            @if (p.metrics) {
+              <dl class="metrics">
+                @for (m of p.metrics; track m.value) {
+                  <div>
+                    <dt>{{ m.value }}</dt>
+                    <dd>{{ t(m.label) }}</dd>
+                  </div>
+                }
+              </dl>
+            }
+
+            @if (p.bullets.length) {
+              <ul class="bullets">
+                @for (b of p.bullets; track $index) {
+                  <li>{{ t(b) }}</li>
+                }
+              </ul>
+            }
+
+            <div class="stack">
+              @for (s of p.stack; track s) {
+                <span class="chip">{{ s }}</span>
+              }
+            </div>
+
+            @if (p.links.length) {
+              <div class="links">
+                @for (l of p.links; track l.href) {
+                  <a [href]="l.href" target="_blank" rel="noopener">
+                    {{ l.label }}
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M7 17 17 7M8 7h9v9" /></svg>
+                  </a>
+                }
+              </div>
+            } @else {
+              <span class="private">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="4" y="11" width="16" height="10" rx="2" /><path d="M8 11V7a4 4 0 0 1 8 0v4" /></svg>
+                {{ t(internal) }}
+              </span>
+            }
+          </div>
+        </article>
+      }
+    </div>
+  </div>
+</section>

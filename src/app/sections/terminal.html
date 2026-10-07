@@ -1,0 +1,57 @@
+<section id="terminal" class="section">
+  <div class="container">
+    <div class="head">
+      <div>
+        <span class="eyebrow" appReveal>{{ t({ pt: '07 · Terminal', en: '07 · Terminal' }) }}</span>
+        <h2 class="section-title" appReveal="80">
+          {{ t({ pt: 'Prefere a', en: 'Prefer the' }) }}
+          <span class="gradient-text">{{ t({ pt: 'linha de comando?', en: 'command line?' }) }}</span>
+        </h2>
+      </div>
+      <p class="lead" appReveal="160">{{ t(hint) }}</p>
+    </div>
+
+    <div class="window" appReveal="120">
+      <div class="chrome">
+        <i></i><i></i><i></i>
+        <span>saulo&#64;portfolio: ~</span>
+        <span class="zsh">zsh</span>
+      </div>
+
+      <div #body class="body" (click)="focus()">
+        @for (line of lines(); track line.id) {
+          <div class="line" [class.in]="line.kind === 'in'">
+            @if (line.kind === 'in') {
+              <span class="ps1"><b>saulo</b>&#64;portfolio <em>~</em> ❯</span>
+            }
+            @for (seg of line.segs; track $index) {
+              @if (seg.href) {
+                <a [href]="seg.href" target="_blank" rel="noopener" [class]="seg.tone ?? ''">{{ seg.text }}</a>
+              } @else {
+                <span [class]="seg.tone ?? ''">{{ seg.text }}</span>
+              }
+            }
+          </div>
+        }
+
+        <label class="line in prompt">
+          <span class="ps1"><b>saulo</b>&#64;portfolio <em>~</em> ❯</span>
+          <span class="field">
+            <span class="ghost">{{ draft() }}<span class="caret"></span></span>
+            <input
+              #input
+              [value]="draft()"
+              (input)="draft.set(input.value)"
+              (keydown)="onKey($event)"
+              [readOnly]="busy()"
+              autocomplete="off"
+              autocapitalize="off"
+              spellcheck="false"
+              [attr.aria-label]="t({ pt: 'Comando do terminal', en: 'Terminal command' })"
+            />
+          </span>
+        </label>
+      </div>
+    </div>
+  </div>
+</section>

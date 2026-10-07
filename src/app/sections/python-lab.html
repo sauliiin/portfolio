@@ -1,0 +1,99 @@
+<section id="python" class="section lab">
+  <div class="snake-glow" aria-hidden="true"></div>
+  <div class="container">
+    <div class="head">
+      <div>
+        <span class="eyebrow" appReveal>{{ t({ pt: '03 · Python Lab', en: '03 · Python Lab' }) }}</span>
+        <h2 class="section-title" appReveal="80">
+          <span class="py">Python</span>{{ ' ' }}
+          <span>{{ t({ pt: 'do PDF à IA', en: 'from PDF to AI' }) }}</span>
+        </h2>
+      </div>
+      <p class="lead" appReveal="160">
+        {{ t({
+          pt: 'É onde eu transformo PDFs, planilhas e sistemas legados em dados confiáveis — e agora em IA que roda no próprio computador, sem API paga.',
+          en: 'Where I turn PDFs, spreadsheets and legacy systems into reliable data — and now into AI that runs on your own machine, no paid API.'
+        }) }}
+      </p>
+    </div>
+
+    <!-- 3D pipeline board -->
+    <div class="board-wrap" appReveal="120">
+      <div class="board">
+        <div class="flow" aria-hidden="true"><i></i><i></i><i></i></div>
+        <ol class="stages">
+          @for (s of stages; track s.step; let i = $index) {
+            <li class="stage" [style.--h]="s.hue" [style.--i]="i" appTilt="10">
+              <span class="step">{{ s.step }}</span>
+              <h3>{{ t(s.title) }}</h3>
+              <p>{{ t(s.body) }}</p>
+              <div class="tech">
+                @for (x of s.tech; track x) {
+                  <span>{{ x }}</span>
+                }
+              </div>
+              <div class="metric">
+                <strong>{{ s.metric.value }}</strong>
+                <small>{{ t(s.metric.label) }}</small>
+              </div>
+            </li>
+          }
+        </ol>
+      </div>
+    </div>
+
+    <div class="bottom">
+      <!-- Real code from my repositories -->
+      <figure class="code glass" appReveal>
+        <header>
+          <div class="dots"><i></i><i></i><i></i></div>
+          <div class="tabs" role="tablist">
+            @for (s of snippets; track s.file; let i = $index) {
+              <button type="button" role="tab" [attr.aria-selected]="tab() === i" (click)="tab.set(i)">
+                <span class="pyicon">🐍</span>{{ s.file }}
+              </button>
+            }
+          </div>
+        </header>
+        <pre><code>@for (line of lines(); track $index) {<span class="ln">@for (tok of line; track $index) {<span [class]="tok.kind ?? ''">{{ tok.text }}</span>}</span>
+}</code></pre>
+        <figcaption>
+          <span>{{ t(snippet().caption) }}</span>
+          <a [href]="'https://github.com/sauliiin/' + snippet().repo" target="_blank" rel="noopener">{{ snippet().repo }} ↗</a>
+        </figcaption>
+      </figure>
+
+      <div class="side">
+        <div class="py-stats" appReveal="80">
+          <div>
+            <strong><app-count-up [value]="17" prefix="+" suffix="k" /></strong>
+            <span>{{ t({ pt: 'linhas de Python', en: 'lines of Python' }) }}</span>
+          </div>
+          <div>
+            <strong><app-count-up [value]="81" suffix="%" /></strong>
+            <span>{{ t({ pt: 'precisão@5 em casos semelhantes', en: 'precision@5 on similar cases' }) }}</span>
+          </div>
+        </div>
+
+        <h3 class="side-title" appReveal="120">{{ t({ pt: 'Mais Python', en: 'More Python' }) }}</h3>
+        <ul class="list">
+          @for (p of side; track p.name; let i = $index) {
+            <li [appReveal]="140 + i * 70">
+              @if (p.href) {
+                <a [href]="p.href" target="_blank" rel="noopener">
+                  <strong>{{ p.name }} <em>↗</em></strong>
+                  <span>{{ t(p.body) }}</span>
+                </a>
+              } @else {
+                <div>
+                  <strong>{{ p.name }}</strong>
+                  <span>{{ t(p.body) }}</span>
+                </div>
+              }
+            </li>
+          }
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>

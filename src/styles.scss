@@ -1,0 +1,395 @@
+/* ------------------------------------------------------------------
+ * Design tokens
+ * ------------------------------------------------------------------ */
+@property --angle {
+  syntax: '<angle>';
+  inherits: false;
+  initial-value: 0deg;
+}
+
+@property --shift {
+  syntax: '<percentage>';
+  inherits: false;
+  initial-value: 0%;
+}
+
+:root {
+  --bg: #07060d;
+  --bg-2: #0d0b18;
+  --surface: rgb(255 255 255 / 0.035);
+  --surface-2: rgb(255 255 255 / 0.06);
+  --border: rgb(255 255 255 / 0.09);
+  --border-strong: rgb(255 255 255 / 0.18);
+  --text: #f4f1ff;
+  --muted: #a7a2c4;
+  --dim: #6f6a8f;
+
+  --violet: #8b5cf6;
+  --pink: #f472b6;
+  --cyan: #22d3ee;
+  --lime: #a3e635;
+  --amber: #fbbf24;
+
+  --grad: linear-gradient(120deg, var(--violet), var(--pink) 50%, var(--cyan));
+  --grad-wide: linear-gradient(90deg, var(--violet), var(--pink), var(--cyan), var(--violet));
+
+  --font-display: 'Unbounded', 'Space Grotesk', system-ui, sans-serif;
+  --font-body: 'Space Grotesk', system-ui, -apple-system, sans-serif;
+  --font-mono: 'JetBrains Mono', ui-monospace, 'SFMono-Regular', monospace;
+
+  --radius: 22px;
+  --radius-sm: 12px;
+  --gutter: clamp(16px, 4vw, 48px);
+  --max: 1200px;
+  --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
+
+  color-scheme: dark;
+}
+
+/* ------------------------------------------------------------------
+ * Base
+ * ------------------------------------------------------------------ */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+  scroll-padding-top: 96px;
+  -webkit-text-size-adjust: 100%;
+}
+
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--font-body);
+  font-size: 17px;
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+  overflow-x: clip;
+}
+
+::selection {
+  background: var(--pink);
+  color: var(--bg);
+}
+
+img,
+svg,
+canvas {
+  display: block;
+  max-width: 100%;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+button {
+  font: inherit;
+  color: inherit;
+  cursor: pointer;
+}
+
+h1,
+h2,
+h3,
+h4 {
+  margin: 0;
+  font-family: var(--font-display);
+  line-height: 1.05;
+  letter-spacing: -0.02em;
+  text-wrap: balance;
+}
+
+p {
+  margin: 0;
+  text-wrap: pretty;
+}
+
+:focus-visible {
+  outline: 2px solid var(--cyan);
+  outline-offset: 3px;
+  border-radius: 6px;
+}
+
+::-webkit-scrollbar {
+  width: 10px;
+}
+::-webkit-scrollbar-track {
+  background: var(--bg);
+}
+::-webkit-scrollbar-thumb {
+  background: linear-gradient(var(--violet), var(--pink));
+  border-radius: 10px;
+  border: 2px solid var(--bg);
+}
+
+/* Film grain over everything — subtle texture that keeps flat areas alive. */
+body::after {
+  content: '';
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 100;
+  opacity: 0.05;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+
+/* ------------------------------------------------------------------
+ * Shared building blocks
+ * ------------------------------------------------------------------ */
+.container {
+  width: min(var(--max), 100% - var(--gutter) * 2);
+  margin-inline: auto;
+}
+
+.section {
+  position: relative;
+  padding-block: clamp(80px, 12vw, 160px);
+}
+
+.eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  font-family: var(--font-mono);
+  font-size: 13px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--cyan);
+
+  &::before {
+    content: '';
+    width: 28px;
+    height: 1px;
+    background: currentColor;
+  }
+}
+
+.section-title {
+  margin-top: 18px;
+  font-size: clamp(34px, 6vw, 72px);
+  font-weight: 800;
+}
+
+.gradient-text {
+  background: var(--grad-wide);
+  background-size: 300% 100%;
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  animation: gradient-pan 8s linear infinite;
+}
+
+@keyframes gradient-pan {
+  to {
+    background-position: 300% 0;
+  }
+}
+
+.outline-text {
+  color: transparent;
+  -webkit-text-stroke: 1.5px rgb(255 255 255 / 0.35);
+}
+
+.glass {
+  background: linear-gradient(160deg, rgb(255 255 255 / 0.07), rgb(255 255 255 / 0.02));
+  border: 1px solid var(--border);
+  backdrop-filter: blur(18px) saturate(140%);
+  -webkit-backdrop-filter: blur(18px) saturate(140%);
+}
+
+/* Rotating conic border — used on hover for cards and on primary buttons. */
+/* No `isolation` here: it would flatten `preserve-3d` on 3D cards. */
+.glow-border {
+  position: relative;
+
+  /* Drawn inside the padding box so it survives `overflow: hidden` hosts. */
+  &::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    padding: 1px;
+    background: conic-gradient(from var(--angle), transparent 0 55%, var(--violet), var(--pink), var(--cyan), transparent 95%);
+    -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+    -webkit-mask-composite: xor;
+    mask-composite: exclude;
+    animation: spin-angle 4s linear infinite;
+    opacity: var(--glow-opacity, 0);
+    transition: opacity 0.4s;
+    pointer-events: none;
+    z-index: 1;
+  }
+}
+
+@keyframes spin-angle {
+  to {
+    --angle: 360deg;
+  }
+}
+
+.btn {
+  --glow-opacity: 1;
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  padding: 15px 26px;
+  border-radius: 999px;
+  border: 1px solid var(--border-strong);
+  background: var(--surface);
+  font-weight: 600;
+  font-size: 15px;
+  white-space: nowrap;
+  transition:
+    background 0.3s,
+    border-color 0.3s,
+    transform 0.4s var(--ease-spring);
+
+  &:hover {
+    background: var(--surface-2);
+    border-color: transparent;
+  }
+
+  &--primary {
+    border: 0;
+    color: #0b0717;
+    background: var(--grad-wide);
+    background-size: 300% 100%;
+    animation: gradient-pan 6s linear infinite;
+    box-shadow:
+      0 10px 40px -10px rgb(244 114 182 / 0.6),
+      inset 0 1px 0 rgb(255 255 255 / 0.4);
+
+    &:hover {
+      background: var(--grad-wide);
+      background-size: 300% 100%;
+      box-shadow:
+        0 14px 50px -8px rgb(139 92 246 / 0.75),
+        inset 0 1px 0 rgb(255 255 255 / 0.4);
+    }
+  }
+
+  svg {
+    width: 18px;
+    height: 18px;
+  }
+}
+
+.chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 5px 12px;
+  border-radius: 999px;
+  border: 1px solid var(--border);
+  background: var(--surface);
+  font-family: var(--font-mono);
+  font-size: 12.5px;
+  color: var(--muted);
+  white-space: nowrap;
+}
+
+kbd {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  padding: 2px 6px;
+  border-radius: 6px;
+  border: 1px solid var(--border-strong);
+  border-bottom-width: 2px;
+  background: var(--surface);
+  color: var(--muted);
+}
+
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+}
+
+/* ------------------------------------------------------------------
+ * Reveal-on-scroll (driven by RevealDirective)
+ * ------------------------------------------------------------------ */
+.reveal {
+  opacity: 0;
+  translate: 0 40px;
+  filter: blur(8px);
+  transition:
+    opacity 0.9s var(--ease-out),
+    translate 0.9s var(--ease-out),
+    filter 0.9s var(--ease-out);
+  transition-delay: var(--reveal-delay, 0ms);
+
+  &.is-visible {
+    opacity: 1;
+    translate: 0 0;
+    filter: none;
+  }
+}
+
+/* Section titles swing up from the floor like a hinged sign. */
+.section-title.reveal {
+  transform: perspective(700px) rotateX(-60deg);
+  transform-origin: 50% 100%;
+  transition:
+    opacity 0.9s var(--ease-out) var(--reveal-delay, 0ms),
+    translate 0.9s var(--ease-out) var(--reveal-delay, 0ms),
+    filter 0.9s var(--ease-out) var(--reveal-delay, 0ms),
+    transform 1.2s var(--ease-out) var(--reveal-delay, 0ms);
+
+  &.is-visible {
+    transform: perspective(700px) rotateX(0deg);
+  }
+}
+
+/* ------------------------------------------------------------------
+ * View transitions (language switch)
+ * ------------------------------------------------------------------ */
+::view-transition-old(root) {
+  animation: vt-out 0.35s var(--ease-out) both;
+}
+::view-transition-new(root) {
+  animation: vt-in 0.5s var(--ease-out) both;
+}
+
+@keyframes vt-out {
+  to {
+    opacity: 0;
+    filter: blur(6px);
+  }
+}
+@keyframes vt-in {
+  from {
+    opacity: 0;
+    filter: blur(6px);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+  }
+  .reveal {
+    opacity: 1;
+    translate: none;
+    filter: none;
+    transform: none !important;
+  }
+}

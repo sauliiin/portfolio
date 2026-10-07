@@ -1,0 +1,166 @@
+<section id="analista" class="section analyst">
+  <div class="container">
+    <div class="head">
+      <div>
+        <span class="eyebrow" appReveal>{{ t({ pt: '02 · Analista de Sistemas', en: '02 · Systems Analyst' }) }}</span>
+        <h2 class="section-title" appReveal="80">
+          {{ t({ pt: 'Do papel ao', en: 'From paper to' }) }}
+          <span class="gradient-text">{{ t({ pt: 'digital', en: 'digital' }) }}</span>
+        </h2>
+      </div>
+      <p class="lead" appReveal="160">
+        {{ t({
+          pt: 'Antes de programar, eu especificava. Com a bagagem jurídica, ganhei uma visão analítica de processos — e passei a desenhar os fluxos que hoje julgam milhares de casos na Prefeitura de BH.',
+          en: 'Before coding, I specified. My legal background gave me an analytical eye for processes — and I started designing the flows that now handle thousands of cases at Belo Horizonte City Hall.'
+        }) }}
+      </p>
+    </div>
+
+    <!-- Impact -->
+    <div class="impact">
+      <div class="kpi big" appReveal appTilt="6">
+        <span class="label">{{ t({ pt: 'Prazo médio de julgamento', en: 'Average time to judgment' }) }}</span>
+        <strong>
+          <app-count-up [from]="90" [value]="30" [duration]="2600" />
+          <small>{{ t({ pt: 'dias', en: 'days' }) }}</small>
+        </strong>
+        <span class="was">{{ t({ pt: 'antes: 90 dias', en: 'before: 90 days' }) }} <b>−67%</b></span>
+        <div class="bar"><i></i></div>
+      </div>
+      <div class="kpi" appReveal="80" appTilt="8">
+        <strong><app-count-up [value]="20000" suffix="+" /></strong>
+        <span class="label">{{ t({ pt: 'processos julgados no fluxo', en: 'cases judged through the flow' }) }}</span>
+      </div>
+      <div class="kpi" appReveal="160" appTilt="8">
+        <strong><app-count-up [value]="4" /></strong>
+        <span class="label">{{ t({ pt: 'serviços integrados ao SYDLE ONE', en: 'services integrated into SYDLE ONE' }) }}</span>
+      </div>
+      <div class="kpi" appReveal="240" appTilt="8">
+        <strong>½</strong>
+        <span class="label">{{ t({ pt: 'da equipe necessária após automações e timers', en: 'of the team needed after automation and timers' }) }}</span>
+      </div>
+    </div>
+
+    <!-- Story -->
+    <ol class="story">
+      @for (c of chapters; track $index; let i = $index) {
+        <li class="chapter glass" [appReveal]="i * 110">
+          <span class="icon">{{ c.icon }}</span>
+          <span class="year">{{ t(c.year) }}</span>
+          <h3>{{ t(c.title) }}</h3>
+          <p>{{ t(c.body) }}</p>
+        </li>
+      }
+    </ol>
+
+    <!-- Process explorer -->
+    <div class="explorer glass" appReveal>
+      <header>
+        <div>
+          <h3>{{ t({ pt: 'O fluxo que eu desenhei', en: 'The flow I designed' }) }}</h3>
+          <p>{{ t({ pt: 'Defesa e recurso contra autos da fiscalização — mais de 20 mil processos julgados.', en: 'Defence and appeal against inspection notices — 20k+ cases judged.' }) }}</p>
+        </div>
+        <div class="views" role="tablist">
+          <button type="button" role="tab" [attr.aria-selected]="view() === 'interactive'" (click)="view.set('interactive')">
+            {{ t({ pt: 'Interativo', en: 'Interactive' }) }}
+          </button>
+          <button type="button" role="tab" [attr.aria-selected]="view() === 'simple'" (click)="view.set('simple')">
+            {{ t({ pt: 'Simplificado', en: 'Simplified' }) }}
+          </button>
+          <button type="button" role="tab" [attr.aria-selected]="view() === 'bpmn'" (click)="view.set('bpmn')">
+            BPMN
+          </button>
+        </div>
+      </header>
+
+      @switch (view()) {
+        @case ('interactive') {
+          <div class="flow" animate.enter="fade-in">
+            <ol class="rail">
+              @for (s of steps; track $index; let i = $index) {
+                <li>
+                  <button
+                    type="button"
+                    class="node"
+                    [class.on]="active() === i"
+                    [class.done]="i < active()"
+                    [attr.data-lane]="s.lane"
+                    [attr.aria-pressed]="active() === i"
+                    (click)="pick(i)"
+                  >
+                    <span class="n">{{ i + 1 }}</span>
+                    <span class="ic">{{ s.icon }}</span>
+                    <strong>{{ t(s.title) }}</strong>
+                    <small>{{ t(lanes[s.lane]) }}</small>
+                  </button>
+                </li>
+              }
+            </ol>
+            <div class="detail" aria-live="polite">
+              @for (s of [steps[active()]!]; track active()) {
+                <div class="card" animate.enter="slide-in" [attr.data-lane]="s.lane">
+                  <span class="ic">{{ s.icon }}</span>
+                  <div>
+                    <small>{{ t(lanes[s.lane]) }} · {{ t(s.who) }}</small>
+                    <strong>{{ active() + 1 }}. {{ t(s.title) }}</strong>
+                    <p>{{ t(s.body) }}</p>
+                  </div>
+                </div>
+              }
+            </div>
+          </div>
+        }
+        @case ('simple') {
+          <figure class="figure" animate.enter="fade-in">
+            <img src="assets/analista/fluxo.png" [alt]="t({ pt: 'Fluxo simplificado: triagem, distribuição, Juntas I a V, arquivamento, Turmas I e II', en: 'Simplified flow: triage, distribution, boards I–V, archive, panels I and II' })" loading="lazy" />
+          </figure>
+        }
+        @case ('bpmn') {
+          <div animate.enter="fade-in">
+            <app-zoom-viewer
+              src="assets/analista/fluxao.png"
+              [alt]="t({ pt: 'Fluxo BPMN completo com subfluxos e timers', en: 'Full BPMN flow with sub-flows and timers' })"
+              [labels]="[t({ pt: 'Aproximar', en: 'Zoom in' }), t({ pt: 'Afastar', en: 'Zoom out' }), t({ pt: 'Restaurar', en: 'Reset' })]"
+            />
+            <p class="note">
+              {{ t({ pt: 'Arraste para mover · duplo clique ou Ctrl + roda para zoom. Alguns trechos foram ocultados por privacidade e ética profissional.', en: 'Drag to pan · double-click or Ctrl + wheel to zoom. Some parts are hidden for privacy and professional ethics.' }) }}
+            </p>
+          </div>
+        }
+      }
+    </div>
+
+    <!-- How I work -->
+    <div class="practice">
+      <h3 class="sub" appReveal>{{ t({ pt: 'Como eu trabalho como analista', en: 'How I work as an analyst' }) }}</h3>
+      <ol class="steps">
+        @for (p of practices; track $index; let i = $index) {
+          <li [appReveal]="i * 70">
+            <span class="ic">{{ p.icon }}</span>
+            <strong>{{ t(p.title) }}</strong>
+            <span>{{ t(p.body) }}</span>
+          </li>
+        }
+      </ol>
+    </div>
+
+    <div class="footer-row" appReveal>
+      <div>
+        <span class="mini">{{ t({ pt: 'Serviços que integrei ao SYDLE ONE', en: 'Services I integrated into SYDLE ONE' }) }}</span>
+        <div class="links">
+          @for (s of services; track s.href) {
+            <a [href]="s.href" target="_blank" rel="noopener">{{ t(s.label) }} <em>↗</em></a>
+          }
+        </div>
+      </div>
+      <div>
+        <span class="mini">{{ t({ pt: 'Sistemas em que atuei', en: 'Systems I worked on' }) }}</span>
+        <div class="systems">
+          @for (s of systems; track s) {
+            <span>{{ s }}</span>
+          }
+        </div>
+      </div>
+    </div>
+  </div>
+</section>

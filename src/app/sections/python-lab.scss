@@ -1,0 +1,485 @@
+$py-blue: #4b8bbe;
+$py-yellow: #ffd43b;
+
+.lab {
+  overflow: hidden;
+}
+
+.snake-glow {
+  position: absolute;
+  top: 10%;
+  left: 50%;
+  width: min(1100px, 120vw);
+  height: 700px;
+  translate: -50% 0;
+  background:
+    radial-gradient(40% 50% at 30% 40%, rgb(75 139 190 / 0.28), transparent 70%),
+    radial-gradient(35% 45% at 70% 55%, rgb(255 212 59 / 0.16), transparent 70%);
+  filter: blur(40px);
+  pointer-events: none;
+}
+
+.head {
+  display: grid;
+  grid-template-columns: 1.2fr 1fr;
+  align-items: end;
+  gap: 32px;
+}
+
+.py {
+  background: linear-gradient(100deg, $py-blue, #7cc4ff 45%, $py-yellow);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+.lead {
+  color: var(--muted);
+  font-size: 18px;
+}
+
+/* ---------- 3D pipeline board ---------- */
+.board-wrap {
+  position: relative;
+  margin-top: clamp(40px, 6vw, 72px);
+  perspective: 1600px;
+}
+
+.board {
+  position: relative;
+  transform-style: preserve-3d;
+  transform: rotateX(26deg) rotateZ(-1.5deg);
+  transition: transform 1s var(--ease-out);
+}
+
+.board-wrap:hover .board {
+  transform: rotateX(8deg) rotateZ(0deg);
+}
+
+.stages {
+  position: relative;
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 18px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  transform-style: preserve-3d;
+}
+
+.stage {
+  --rx: 0deg;
+  --ry: 0deg;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 22px 20px 20px;
+  border-radius: 20px;
+  border: 1px solid hsl(var(--h) 80% 60% / 0.35);
+  background:
+    radial-gradient(120% 80% at 50% 0%, hsl(var(--h) 80% 55% / 0.22), transparent 60%),
+    linear-gradient(170deg, rgb(20 18 36 / 0.95), rgb(10 9 20 / 0.95));
+  box-shadow:
+    0 40px 60px -30px rgb(0 0 0 / 0.9),
+    0 0 0 1px rgb(255 255 255 / 0.03),
+    0 0 50px -20px hsl(var(--h) 80% 55% / 0.6);
+  transform: translateZ(40px) rotateX(var(--rx)) rotateY(var(--ry));
+  transition:
+    transform 0.3s ease-out,
+    box-shadow 0.4s;
+  animation: hover-up 6s ease-in-out infinite;
+  animation-delay: calc(var(--i) * -1.5s);
+
+  &::before {
+    content: '';
+    position: absolute;
+    inset: 0 20% auto;
+    height: 2px;
+    border-radius: 2px;
+    background: hsl(var(--h) 90% 65%);
+    box-shadow: 0 0 16px hsl(var(--h) 90% 65%);
+  }
+
+  &:hover {
+    box-shadow:
+      0 50px 80px -30px rgb(0 0 0 / 0.95),
+      0 0 70px -10px hsl(var(--h) 80% 55% / 0.8);
+  }
+
+  h3 {
+    font-size: 18px;
+    font-weight: 600;
+  }
+
+  p {
+    font-size: 14px;
+    line-height: 1.5;
+    color: var(--muted);
+  }
+}
+
+@keyframes hover-up {
+  50% {
+    translate: 0 0 22px;
+  }
+}
+
+.step {
+  font-family: var(--font-display);
+  font-size: 34px;
+  font-weight: 800;
+  line-height: 1;
+  color: transparent;
+  -webkit-text-stroke: 1.2px hsl(var(--h) 90% 70%);
+}
+
+.tech {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 5px;
+
+  span {
+    padding: 3px 8px;
+    border-radius: 999px;
+    font-family: var(--font-mono);
+    font-size: 11px;
+    color: hsl(var(--h) 90% 80%);
+    background: hsl(var(--h) 70% 50% / 0.14);
+  }
+}
+
+.metric {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  margin-top: auto;
+  padding-top: 12px;
+  border-top: 1px dashed rgb(255 255 255 / 0.1);
+
+  strong {
+    font-family: var(--font-display);
+    font-size: 26px;
+    font-weight: 800;
+    letter-spacing: -0.03em;
+    color: hsl(var(--h) 95% 75%);
+  }
+
+  small {
+    font-size: 12.5px;
+    color: var(--dim);
+  }
+}
+
+/* Data packets travelling along the pipeline, on the board's floor. */
+.flow {
+  position: absolute;
+  top: 50%;
+  left: 2%;
+  right: 2%;
+  height: 2px;
+  background: linear-gradient(90deg, $py-blue, var(--violet), $py-yellow);
+  opacity: 0.6;
+  transform: translateZ(0);
+
+  i {
+    position: absolute;
+    top: -4px;
+    left: 0;
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background: #fff;
+    box-shadow:
+      0 0 12px 3px $py-yellow,
+      0 0 30px 6px rgb(75 139 190 / 0.8);
+    animation: packet 4.5s linear infinite;
+
+    &:nth-child(2) {
+      animation-delay: -1.5s;
+    }
+
+    &:nth-child(3) {
+      animation-delay: -3s;
+    }
+  }
+}
+
+@keyframes packet {
+  from {
+    left: 0%;
+    opacity: 0;
+  }
+  8% {
+    opacity: 1;
+  }
+  92% {
+    opacity: 1;
+  }
+  to {
+    left: 100%;
+    opacity: 0;
+  }
+}
+
+/* ---------- code + side ---------- */
+.bottom {
+  display: grid;
+  grid-template-columns: minmax(0, 1.4fr) minmax(0, 1fr);
+  gap: 28px;
+  margin-top: clamp(48px, 7vw, 88px);
+}
+
+.code {
+  margin: 0;
+  border-radius: var(--radius);
+  overflow: hidden;
+  background: rgb(10 9 20 / 0.88);
+
+  header {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    padding: 10px 14px;
+    border-bottom: 1px solid var(--border);
+    background: rgb(255 255 255 / 0.03);
+  }
+
+  pre {
+    margin: 0;
+    padding: 18px 18px 18px 8px;
+    max-height: 430px;
+    overflow: auto;
+    font-family: var(--font-mono);
+    font-size: 12.5px;
+    line-height: 1.7;
+    color: #d6d2f0;
+    counter-reset: ln;
+    scrollbar-width: thin;
+  }
+
+  figcaption {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    gap: 8px 16px;
+    padding: 12px 18px;
+    border-top: 1px solid var(--border);
+    font-size: 13.5px;
+    color: var(--muted);
+
+    a {
+      font-family: var(--font-mono);
+      font-size: 12.5px;
+      color: $py-yellow;
+
+      &:hover {
+        text-decoration: underline;
+      }
+    }
+  }
+}
+
+.dots {
+  display: flex;
+  gap: 7px;
+
+  i {
+    width: 11px;
+    height: 11px;
+    border-radius: 50%;
+    background: #ff5f57;
+
+    &:nth-child(2) {
+      background: #febc2e;
+    }
+
+    &:nth-child(3) {
+      background: #28c840;
+    }
+  }
+}
+
+.tabs {
+  display: flex;
+  gap: 4px;
+  overflow-x: auto;
+
+  button {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 12px;
+    border: 1px solid transparent;
+    border-radius: 9px;
+    background: none;
+    font-family: var(--font-mono);
+    font-size: 12.5px;
+    color: var(--dim);
+    white-space: nowrap;
+    transition: all 0.25s;
+
+    &:hover {
+      color: var(--text);
+    }
+
+    &[aria-selected='true'] {
+      color: var(--text);
+      border-color: var(--border);
+      background: var(--surface-2);
+    }
+  }
+}
+
+.pyicon {
+  font-size: 12px;
+}
+
+.ln::before {
+  counter-increment: ln;
+  content: counter(ln);
+  display: inline-block;
+  width: 2.4em;
+  margin-right: 14px;
+  text-align: right;
+  color: rgb(255 255 255 / 0.18);
+}
+
+.kw {
+  color: #c084fc;
+}
+.str {
+  color: #bef264;
+}
+.com {
+  color: var(--dim);
+  font-style: italic;
+}
+.num {
+  color: #fb923c;
+}
+.fn {
+  color: #fde68a;
+}
+.op {
+  color: #f9a8d4;
+}
+.self {
+  color: #7dd3fc;
+}
+
+.py-stats {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+
+  div {
+    padding: 18px;
+    border-radius: 16px;
+    border: 1px solid rgb(255 212 59 / 0.25);
+    background: linear-gradient(150deg, rgb(75 139 190 / 0.16), rgb(255 212 59 / 0.06));
+  }
+
+  strong {
+    display: block;
+    font-family: var(--font-display);
+    font-size: 32px;
+    font-weight: 800;
+    letter-spacing: -0.03em;
+    background: linear-gradient(90deg, #7cc4ff, $py-yellow);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+  }
+
+  span {
+    font-size: 13px;
+    color: var(--muted);
+  }
+}
+
+.side-title {
+  margin-top: 26px;
+  font-size: 15px;
+  font-family: var(--font-mono);
+  font-weight: 400;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--cyan);
+}
+
+.list {
+  display: grid;
+  gap: 10px;
+  margin: 14px 0 0;
+  padding: 0;
+  list-style: none;
+
+  a,
+  div {
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+    padding: 14px 16px;
+    border-radius: 14px;
+    border: 1px solid var(--border);
+    background: var(--surface);
+    transition:
+      border-color 0.3s,
+      translate 0.35s var(--ease-spring),
+      background 0.3s;
+  }
+
+  a:hover {
+    border-color: rgb(255 212 59 / 0.5);
+    background: rgb(255 212 59 / 0.05);
+    translate: 6px 0;
+  }
+
+  strong {
+    font-size: 15px;
+    font-weight: 600;
+
+    em {
+      font-style: normal;
+      color: $py-yellow;
+    }
+  }
+
+  span {
+    font-size: 13.5px;
+    line-height: 1.45;
+    color: var(--muted);
+  }
+}
+
+@media (max-width: 1000px) {
+  .stages {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .flow {
+    display: none;
+  }
+
+  .bottom {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 760px) {
+  .head {
+    grid-template-columns: 1fr;
+  }
+
+  .board,
+  .board-wrap:hover .board {
+    transform: rotateX(10deg);
+  }
+}
+
+@media (max-width: 520px) {
+  .stages {
+    grid-template-columns: 1fr;
+  }
+}
